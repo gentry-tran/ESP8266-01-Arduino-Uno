@@ -135,10 +135,6 @@ pom.xml
 	<pluginId>grpc-java</pluginId>
 	<pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:osx-x86_64</pluginArtifact>				
 </configuration>
-
-
-
-
 ```
 gRPC Configuration:
 
