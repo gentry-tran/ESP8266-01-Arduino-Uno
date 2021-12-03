@@ -64,8 +64,8 @@ io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception: HTTP/2 client 
 
 Attempts to solve current issue:
 1. Created a Java client and successfully invoked the method (/)
-2. Looking into the ![WifiClient.cpp](https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiClient.cpp)
-3. Looking into the ![Http2Handler](https://github.com/netty/netty/blob/4.1/codec-http2/src/main/java/io/netty/handler/codec/http2/Http2ConnectionHandler.java#L285)
+2. Looking into the [WifiClient.cpp](https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiClient.cpp)
+3. Looking into the [Http2Handler](https://github.com/netty/netty/blob/4.1/codec-http2/src/main/java/io/netty/handler/codec/http2/Http2ConnectionHandler.java#L285)
 ```
 ... blah blah blah ...
         private boolean readClientPrefaceString(ByteBuf in) throws Http2Exception {
@@ -120,7 +120,7 @@ Nov 30, 2021 2:05:49 PM io.grpc.examples.helloworld.HelloWorldServer start
 INFO: Server started, listening on 50051
 ````
 
-5. Looking into the ![Nanopb](https://github.com/nanopb/nanopb) implementation
+5. Looking into the [Nanopb](https://github.com/nanopb/nanopb) implementation
 
 6. Creating my own implementation of gRPC to handle the decoding...
 
