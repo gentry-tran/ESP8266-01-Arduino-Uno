@@ -122,6 +122,60 @@ INFO: Server started, listening on 50051
 
 5. Looking into the ![Nanopb](https://github.com/nanopb/nanopb) implementation
 
+6. Creating my own implementation of gRPC to handle the decoding...
+
+Useful notes for configuration problems:
+
+When using Maven it is a good idea to use requireUpperBoundDeps from Maven Enforcer plugin to detect cases where Maven is resolving dependencies incorrectly (or rather, as defined, but in an unhelpful way). ![ejona86's comment](https://github.com/grpc/grpc-java/issues/3049)
+
+pom.xml
+```
+<configuration>
+	<protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:osx-x86_64</protocArtifact>
+	<pluginId>grpc-java</pluginId>
+	<pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:osx-x86_64</pluginArtifact>				
+</configuration>
+
+
+
+
+```
+gRPC Configuration:
+
+https://github.com/protocolbuffers/protobuf/issues/6286
+https://github.com/grpc/grpc-java/issues/7690
+
+7. I had thought of debugging the application by remotely hooking up to the application. You can do this by adding to the 
+
+8. In the meantime, I wanted to ensure the data was hitting my server, so I created a sockets server and it prints out just fine. TempEvent was define in the .proto file and it works, though not secure. I will get this working on HTTP/2.
+
+```
+    public static void main(String[] args) throws IOException, InterruptedException {
+
+        try (ServerSocket server = new ServerSocket(8080)) {
+            System.out.println("Server ready to accept connections on port " + server.getLocalPort());
+            TemperatureClient tempClient = new TemperatureClient();
+            while(true) {
+
+                Socket client = server.accept();
+                System.out.println("Client connected using remote port " + client.getPort());
+
+                final Thread t = new Thread(() -> {
+                    try {
+                        TempEvent p = TempEvent.parseFrom(client.getInputStream());
+                        float i = p.getTempCel();
+                        System.out.println("TEMP " + i);
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                    }
+                });
+                t.start();
+            }
+        }
+    }
+```
+
+9. I decided to create a gRPC Java server from scratch instead of trying to debug Google's helloworld example. Every time I made a change, I would break something. Building it from scratch gave me a much clearer idea of what I needed to do to fix it and helped me learn the gRPC core concepts. My project will be on my [github](https://github.com/yidongnan/grpc-spring-boot-starter). HTTP/2 issue is still preventing this. After getting stuck, I wrote the socket above to ensure my sanity... time to debug Netty.
 
 Useful forums:
   
