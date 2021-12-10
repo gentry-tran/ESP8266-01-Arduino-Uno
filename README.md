@@ -126,7 +126,7 @@ INFO: Server started, listening on 50051
 
 Useful notes for configuration problems:
 
-When using Maven it is a good idea to use requireUpperBoundDeps from Maven Enforcer plugin to detect cases where Maven is resolving dependencies incorrectly (or rather, as defined, but in an unhelpful way). ![ejona86's comment](https://github.com/grpc/grpc-java/issues/3049)
+When using Maven it is a good idea to use requireUpperBoundDeps from Maven Enforcer plugin to detect cases where Maven is resolving dependencies incorrectly (or rather, as defined, but in an unhelpful way). [ejona86's comment](https://github.com/grpc/grpc-java/issues/3049)
 
 pom.xml
 ```
