@@ -1,46 +1,40 @@
 package service;
 
-import handler.TemperatureClient;
-import io.grpc.ServerBuilder;
-import io.grpc.examples.helloworld.TempEvent;
+import io.grpc.event.TempEvent;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 
 public class Server {
 
-//    private static volatile boolean stopped = false;
-//
-//    public static void main(String[] args) throws IOException, InterruptedException {
-//        io.grpc.Server server = ServerBuilder
-//                .forPort(8080)
-//                .addService(new HelloServiceImpl()).build();
-//        server.start();
-//        server.awaitTermination();
-//    }
-
     public static void main(String[] args) throws IOException, InterruptedException {
-        int port = 8080;
+        int port = 10101;
         try (ServerSocket server = new ServerSocket(port)) {
             System.out.println("Listening on port: " + port);
-//            TemperatureClient tempClient = new TemperatureClient();
-            while(true) {
+
+            while (true) {
                 Socket client = server.accept();
                 System.out.println("Client connected using remote port " + client.getPort());
-                final Thread t = new Thread(() -> {
-                    try {
-                        TempEvent p = TempEvent.parseFrom(client.getInputStream());
-                        float i = p.getTempCel();
-                        System.out.println("Temp " + i);
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                    }
-                });
-                t.start();
+
+                while (client.isConnected()) {
+                    final Thread t = new Thread(() -> {
+                        try {
+                            byte[] event;
+                            event = client.getInputStream().readNBytes(12);
+                            TempEvent p = TempEvent.parseFrom(event);
+                            int deviceId = p.getDeviceId();
+                            float humidity = p.getHumidity();
+                            float temperature = p.getTemperature();
+                            System.out.println("Device Id :" + deviceId);
+                            System.out.println("Humidity :" + humidity);
+                            System.out.println("Temperature :" + temperature);
+                        } catch (IOException ioe) {
+                            ioe.printStackTrace();
+                        }
+                    });
+                    t.start();
+                }
             }
         }
     }
