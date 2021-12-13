@@ -2,7 +2,7 @@
 
 This project seemed quite simple, but the implementation was more difficult than I anticipated due to running into some errors along the way which prevented me from flashing the firmware to the ESP8266-01. After searching for days on the web to understand exactly what my issues were, I wanted to document my process along the way so that someone else won't have to experience this relentless YouTube/Google tutorial search.
 
-From the forums, the problems look like they have persisted for more than 6-7 years with many many write ups but very few succeeding to address the issues with this simple little device. Now that I have figured it out, I will document it all below. 
+From the forums, the problems look like they have persisted for more than 6-7 years with many many write ups but very few succeeding to address the issues with this simple little device. I will document my process below. 
 
 In this project, I am using the Arduino Uno R3 and the Generic ESP8266-01 (bought a two pack at Microcenter for $5.99). This is a rough guide on following this blog post: https://medium.com/grpc/efficient-iot-with-the-esp8266-protocol-buffers-grafana-go-and-kubernetes-a2ae214dbd29
 
