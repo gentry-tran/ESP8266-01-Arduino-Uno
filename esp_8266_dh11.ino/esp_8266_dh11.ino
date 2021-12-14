@@ -16,10 +16,11 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 
-const char* ssid     = "<wifi>";
-const char* password = "<pass>";
+const char* ssid     = "NETGEAR89";
+const char* password = "grandcarrot657";
 
-const String addr     = "<ip>";
+const String addr     = "192.168.0.23"; // mac
+//const String addr     = "192.168.0.29"; // rasp
 const uint16_t port  = 10101;
 
 WiFiClient client;
@@ -40,31 +41,31 @@ void setup() {
 
   Serial.print("connecting to ");
   Serial.println(addr);
-
-  while (!client.connect(addr, port)) {
-    Serial.println("connection failed");
-    Serial.println("wait 5 sec to reconnect...");
-    delay(1000);
-  }
 }
 
 
 void loop() {
 
-  float hum = dht.readHumidity();
-  float tmp = dht.readTemperature(true);
+  if (client.connected()) {
+    float hum = dht.readHumidity();
+    float tmp = dht.readTemperature(true);
 
-  if (isnan(hum) || isnan(tmp)) {
-    Serial.println("failed to read sensor data");
-    return;
+    if (isnan(hum) || isnan(tmp)) {
+      Serial.println("failed to read sensor data");
+      return;
+    }
+
+    _TempEvent event = TempEvent_init_zero;
+    event.deviceId = 1;
+    event.humidity = hum;
+    event.temperature = tmp;
+    sendTemp(event);
+    delay(5000);
+    } else {
+    client.connect(addr, port);
+    Serial.println("Attempting to connect to server...");
+    delay(5000);
   }
-
-  _TempEvent event = TempEvent_init_zero;
-  event.deviceId = 1;
-  event.humidity = hum;
-  event.temperature = tmp;
-  sendTemp(event);
-  delay(5000);
 }
 
 void sendTemp(_TempEvent e) {

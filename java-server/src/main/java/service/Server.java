@@ -1,41 +1,29 @@
 package service;
 
+import handler.TempEventConsumer;
 import io.grpc.event.TempEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import pojo.EventQueue;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        int port = 10101;
-        try (ServerSocket server = new ServerSocket(port)) {
-            System.out.println("Listening on port: " + port);
+    private static final Logger logger = LogManager.getLogger(Server.class);
+    private static final int MAX_THREADS = 4; // Testing on quad-core Rasp Pi
 
-            while (true) {
-                Socket client = server.accept();
-                System.out.println("Client connected using remote port " + client.getPort());
+    public static void main(String[] args) throws IOException {
+        logger.info("Starting Application.");
+        // Create thread pool
+        ExecutorService pool = Executors.newFixedThreadPool(MAX_THREADS);
+        EventQueue queue = new EventQueue<TempEvent>();
+        Runnable producer = new EventProducer(queue);
+        Runnable consumer = new TempEventConsumer(queue);
 
-                while (client.isConnected()) {
-                    final Thread t = new Thread(() -> {
-                        try {
-                            byte[] event;
-                            event = client.getInputStream().readNBytes(12);
-                            TempEvent p = TempEvent.parseFrom(event);
-                            int deviceId = p.getDeviceId();
-                            float humidity = p.getHumidity();
-                            float temperature = p.getTemperature();
-                            System.out.println("Device Id :" + deviceId);
-                            System.out.println("Humidity :" + humidity);
-                            System.out.println("Temperature :" + temperature);
-                        } catch (IOException ioe) {
-                            ioe.printStackTrace();
-                        }
-                    });
-                    t.start();
-                }
-            }
-        }
+        pool.execute(producer);
+        pool.execute(consumer);
     }
 }
