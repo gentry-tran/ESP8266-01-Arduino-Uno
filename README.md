@@ -4,11 +4,27 @@ This project seemed quite simple, but the implementation was more difficult than
 
 From the forums, the problems look like they have persisted for more than 6-7 years with many many write ups but very few succeeding to address the issues with this simple little device. I will document my process below. 
 
-In this project, I am using the Arduino Uno R3 and the Generic ESP8266-01 (bought a two pack at Microcenter for $5.99). This is a rough guide on following this blog post: https://medium.com/grpc/efficient-iot-with-the-esp8266-protocol-buffers-grafana-go-and-kubernetes-a2ae214dbd29
+In this project, I am using the Arduino Uno R3 and the Generic ESP8266-01 (bought a two pack at Microcenter for $5.99). This is a rough guide on following this blog post, but not the same (ESP8266 is a weaker chip): https://medium.com/grpc/efficient-iot-with-the-esp8266-protocol-buffers-grafana-go-and-kubernetes-a2ae214dbd29
 
 ![image](https://user-images.githubusercontent.com/6667252/143783770-d4c70b0c-b3b6-4818-845e-61952bc62f3c.png)
 
 ![image](https://user-images.githubusercontent.com/6667252/143783826-5e992eb3-1b99-450d-ab8c-1c2ddc86d67d.png)
+
+
+Architecture of project:
+
+1. DHT11 Sensor + Arduino Uno + ESP8266 (Data Source)
+	-> Writes to Socket using protobufs
+2. Java application reads from Socket as byte stream
+	-> Sensor readings are read and put onto an EventQueue (Blocking)
+3. An EventConsumer reads from the queue and posts it into an InfluxDB
+	-> Using Grafana to view the data
+4. Application is deployed on Docker on a Raspberry Pi
+
+
+
+The code is in this repository under: java-server
+
 
 Main Problems (from the Arduino forums):
 
@@ -62,7 +78,7 @@ io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception: HTTP/2 client 
 	at java.base/java.lang.Thread.run(Thread.java:831)
 ```
 
-Attempts to solve current issue:
+Attempts to solve current issue (Solved below):
 1. Created a Java client and successfully invoked the method (/)
 2. Looking into the [WifiClient.cpp](https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiClient.cpp)
 3. Looking into the [Http2Handler](https://github.com/netty/netty/blob/4.1/codec-http2/src/main/java/io/netty/handler/codec/http2/Http2ConnectionHandler.java#L285)
@@ -172,6 +188,53 @@ https://github.com/grpc/grpc-java/issues/7690
 ```
 
 9. I decided to create a gRPC Java server from scratch instead of trying to debug Google's helloworld example. Every time I made a change, I would break something. Building it from scratch gave me a much clearer idea of what I needed to do to fix it and helped me learn the gRPC core concepts. My project will be on my [github](https://github.com/yidongnan/grpc-spring-boot-starter). HTTP/2 issue is still preventing this. After getting stuck, I wrote the socket above to ensure my sanity... time to debug Netty.
+
+
+HTTP/2 client preface string missing or corrupt. - this issue comes from the .ino file. The client is using straight TCP connection (seen below in the connect implementation). Asked this [question|https://stackoverflow.com/questions/70311138/http-2-client-preface-string-missing-or-corrupt-for-c-client-grpc-using-nanopb] on Stackoverflow for assistance.
+
+
+```
+WiFiClient client
+client.connect(addr, port)
+```
+
+WiFiClient.cpp file
+```
+int WiFiClient::connect(IPAddress ip, uint16_t port)
+{
+    if (_client) {
+        stop();
+        _client->unref();
+        _client = nullptr;
+    }
+
+    tcp_pcb* pcb = tcp_new();
+    if (!pcb)
+        return 0;
+
+    if (_localPort > 0) {
+        pcb->local_port = _localPort++;
+    }
+
+    _client = new ClientContext(pcb, nullptr, nullptr);
+    _client->ref();
+    _client->setTimeout(_timeout);
+    int res = _client->connect(ip, port);
+    if (res == 0) {
+        _client->unref();
+        _client = nullptr;
+        return 0;
+    }
+
+    setSync(defaultSync);
+    setNoDelay(defaultNoDelay);
+
+    return 1;
+}
+```
+
+And, since there is no gRPC C client, I will just continue writing to sockets for the remainder of the project. There was a [project|https://github.com/d21d3q/nanogrpc] started to add this, but is now abandoned.
+
 
 Useful forums:
   
