@@ -31,31 +31,38 @@ public class EventProducer<E> implements Runnable {
     @Override
     public void run() {
         while (true) {
-            if (client == null) {
-                setClient();
-            }
+            if (client == null) setClient(); // guard
+
             synchronized (queue) {
-                while (queue.size() > 1) {
-                    logger.info("Queue is filling.");
-                    try {
-                        queue.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                // Put events onto an event queue
-                TempEvent event = null;
-                try {
-                    // in case there is an interruption, prevent readNBytes from forever blocking
-                    client.setSoTimeout(SOCKET_TIMEOUT);
-                    event = TempEvent.parseFrom(client.getInputStream().readNBytes(CURRENT_PROTOBUF_BYTE_SIZE));
-                    queue.add((E) factory.wrap(event));
-                } catch (ClassCastException | IOException e) {
-                    e.printStackTrace();
-                }
+                blockWhileFillingQueue();
+                addEventToQueue();
                 logger.info(queue.size());
                 queue.notifyAll();
             }
+        }
+    }
+
+    private void blockWhileFillingQueue() {
+        while (queue.size() > 1) {
+            logger.info("Queue is filling.");
+            try {
+                queue.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void addEventToQueue() {
+        TempEvent event;
+        try {
+            // if interrupted, prevent readNBytes from forever blocking
+            client.setSoTimeout(SOCKET_TIMEOUT);
+            event = TempEvent.parseFrom(client.getInputStream().readNBytes(CURRENT_PROTOBUF_BYTE_SIZE));
+            queue.add((E) factory.wrap(event));
+        } catch (ClassCastException | IOException e) {
+            e.printStackTrace();
+            client = null; // kill
         }
     }
 

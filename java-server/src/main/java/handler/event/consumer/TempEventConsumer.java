@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import service.EventService;
 import service.Service;
 import wrapper.Event;
-import wrapper.EventWrapper;
 
 public class TempEventConsumer implements Runnable {
     private static final Logger logger = LogManager.getLogger(TempEventConsumer.class);
