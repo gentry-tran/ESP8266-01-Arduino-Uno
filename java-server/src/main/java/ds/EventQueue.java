@@ -1,6 +1,8 @@
 package ds;
 
-public class EventQueue<E> {
+import wrapper.Event;
+
+public class EventQueue<E extends Event> implements SimpleQueue<E> {
     public volatile Node head;
     public volatile Node tail;
     volatile int size = 0;
@@ -21,6 +23,7 @@ public class EventQueue<E> {
         return this.size == 0;
     }
 
+    @Override
     public void add(E dataEvent) {
         this.size++;
         Node event = new Node(dataEvent);
@@ -31,6 +34,7 @@ public class EventQueue<E> {
         }
     }
 
+    @Override
     public Node remove() {
         if (head == null) {
             return null;

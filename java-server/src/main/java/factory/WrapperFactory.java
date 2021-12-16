@@ -1,11 +1,12 @@
 package factory;
 
 import org.springframework.stereotype.Component;
+import wrapper.Event;
 import wrapper.EventWrapper;
 
 @Component
 public class WrapperFactory<T> {
-    public T wrap(T event) {
-        return (T) new EventWrapper<>(event);
+    public Event wrap(T event) {
+        return new EventWrapper<T>(event);
     }
 }

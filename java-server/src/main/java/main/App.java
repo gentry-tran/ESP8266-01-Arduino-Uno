@@ -12,6 +12,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ds.EventQueue;
 import service.EventService;
 import service.Service;
+import wrapper.Event;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +24,7 @@ public class App {
     private static final int MAX_THREADS = 4; // Testing on quad-core Rasp Pi
 
     private InfluxDBClient client;
-    private EventQueue<TempEvent> queue;
+    private EventQueue<Event> queue;
     private Service service;
     private WrapperFactory factory;
 

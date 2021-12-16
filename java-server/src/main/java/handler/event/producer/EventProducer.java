@@ -6,6 +6,7 @@ import io.grpc.event.TempEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import wrapper.Event;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,12 +19,12 @@ public class EventProducer<E> implements Runnable {
     private static final int CURRENT_PROTOBUF_BYTE_SIZE = 12; // bytes written
     private Socket client;
 
-    final private EventQueue<E> queue;
+    final private EventQueue<Event> queue;
 
     final private WrapperFactory factory;
 
     @Autowired
-    public EventProducer(EventQueue<E> queue, WrapperFactory factory) {
+    public EventProducer(EventQueue<Event> queue, WrapperFactory factory) {
         this.queue = queue;
         this.factory = factory;
     }
@@ -59,7 +60,7 @@ public class EventProducer<E> implements Runnable {
             // if interrupted, prevent readNBytes from forever blocking
             client.setSoTimeout(SOCKET_TIMEOUT);
             event = TempEvent.parseFrom(client.getInputStream().readNBytes(CURRENT_PROTOBUF_BYTE_SIZE));
-            queue.add((E) factory.wrap(event));
+            queue.add(factory.wrap(event));
         } catch (ClassCastException | IOException e) {
             e.printStackTrace();
             client = null; // kill

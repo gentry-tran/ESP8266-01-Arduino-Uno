@@ -12,12 +12,12 @@ import wrapper.Event;
 public class TempEventConsumer implements Runnable {
     private static final Logger logger = LogManager.getLogger(TempEventConsumer.class);
 
-    final private EventQueue<TempEvent> queue;
+    final private EventQueue<Event> queue;
 
     private Service service;
 
     @Autowired
-    public TempEventConsumer(EventQueue<TempEvent> queue, Service service) {
+    public TempEventConsumer(EventQueue<Event> queue, Service service) {
         this.queue = queue;
         this.service = service;
     }

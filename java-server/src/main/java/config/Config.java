@@ -3,14 +3,13 @@ package config;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.InfluxDBClientOptions;
-import io.grpc.event.TempEvent;
+import ds.EventQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import ds.EventQueue;
-import service.EventService;
+import wrapper.Event;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,7 +27,7 @@ public class Config {
     private static String URL;
 
     @Bean
-    public EventQueue<TempEvent> queue() {
+    public EventQueue<Event> queue() {
         return new EventQueue<>();
     }
 
