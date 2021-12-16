@@ -1,9 +1,11 @@
 package handler.event.producer;
 
 import ds.EventQueue;
+import factory.WrapperFactory;
 import io.grpc.event.TempEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,8 +20,12 @@ public class EventProducer<E> implements Runnable {
 
     final private EventQueue<E> queue;
 
-    public EventProducer(EventQueue<E> queue) {
+    final private WrapperFactory factory;
+
+    @Autowired
+    public EventProducer(EventQueue<E> queue, WrapperFactory factory) {
         this.queue = queue;
+        this.factory = factory;
     }
 
     @Override
@@ -43,13 +49,10 @@ public class EventProducer<E> implements Runnable {
                     // in case there is an interruption, prevent readNBytes from forever blocking
                     client.setSoTimeout(SOCKET_TIMEOUT);
                     event = TempEvent.parseFrom(client.getInputStream().readNBytes(CURRENT_PROTOBUF_BYTE_SIZE));
-                    logger.debug("Device ID: " + event.getDeviceId());
-                    logger.debug("Humidity: " + event.getHumidity());
-                    logger.debug("Temperature: " + event.getTemperature());
-                } catch (NullPointerException | IOException e) {
+                    queue.add((E) factory.wrap(event));
+                } catch (ClassCastException | IOException e) {
                     e.printStackTrace();
                 }
-                queue.add((E) event);
                 logger.info(queue.size());
                 queue.notifyAll();
             }

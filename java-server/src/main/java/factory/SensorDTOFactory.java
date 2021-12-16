@@ -1,5 +1,6 @@
-package data;
+package factory;
 
+import data.DHT11;
 import org.springframework.stereotype.Component;
 import sensor.Sensor;
 import sensor.SensorType;

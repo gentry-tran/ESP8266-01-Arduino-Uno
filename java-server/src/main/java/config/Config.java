@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = { "handler.event", "pojo", "service", "data"})
+@ComponentScan(basePackages = { "handler.event", "service", "factory"})
 public class Config {
 
     private static final Logger logger = LogManager.getLogger(Config.class);

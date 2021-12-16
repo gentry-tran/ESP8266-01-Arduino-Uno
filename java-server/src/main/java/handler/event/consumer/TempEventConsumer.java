@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import service.EventService;
 import service.Service;
+import wrapper.Event;
 import wrapper.EventWrapper;
 
 public class TempEventConsumer implements Runnable {
@@ -34,8 +35,7 @@ public class TempEventConsumer implements Runnable {
                         e.printStackTrace();
                     }
                 }
-                TempEvent event = (TempEvent) queue.remove().event;
-                ((EventService)service).process(new EventWrapper(event));
+                ((EventService)service).process((Event)queue.remove().event);
                 queue.notifyAll();
             }
         }

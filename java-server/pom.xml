@@ -79,7 +79,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -137,7 +137,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><configuration><source>11</source><target>11</target></configuration></plugin>
             <!-- Keep this to test the protobuffer dependencies when updating -->
 <!--            <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->

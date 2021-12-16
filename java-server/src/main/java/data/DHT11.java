@@ -36,10 +36,15 @@ public class DHT11 implements Sensor {
     public DHT11(Event event) {
         TempEvent e = (TempEvent) event.getEvent();
         this.deviceId = KEYES_DHT11_SENSOR;
-        this.location = checkDeviceLocation(e.getDeviceId());
-        this.humidity = e.getHumidity();
-        this.temperature = e.getTemperature();
         this.timestamp = Instant.now();
+
+        try {
+            this.temperature = e.getTemperature();
+            this.humidity = e.getHumidity();
+            this.location = checkDeviceLocation(e.getDeviceId());
+        } catch(NullPointerException npe) {
+            npe.printStackTrace();
+        }
     }
 
     private String checkDeviceLocation(int deviceId) {

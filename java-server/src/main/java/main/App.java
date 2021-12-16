@@ -2,6 +2,7 @@ package main;
 
 import com.influxdb.client.InfluxDBClient;
 import config.Config;
+import factory.WrapperFactory;
 import handler.event.consumer.TempEventConsumer;
 import handler.event.producer.EventProducer;
 import io.grpc.event.TempEvent;
@@ -24,6 +25,7 @@ public class App {
     private InfluxDBClient client;
     private EventQueue<TempEvent> queue;
     private Service service;
+    private WrapperFactory factory;
 
     public static void main(String[] args) throws IOException {
         logger.info("Starting Application.");
@@ -35,7 +37,7 @@ public class App {
     private void startApp() {
         // Create thread pool
         ExecutorService pool = Executors.newFixedThreadPool(MAX_THREADS);
-        Runnable producer = new EventProducer(queue);
+        Runnable producer = new EventProducer(queue, factory);
         Runnable consumer = new TempEventConsumer(queue, service);
         pool.execute(consumer);
         pool.execute(producer);
@@ -47,6 +49,7 @@ public class App {
         client = context.getBean(InfluxDBClient.class);
         queue = context.getBean(EventQueue.class);
         service = context.getBean(EventService.class);
+        factory = context.getBean(WrapperFactory.class);
         return this;
     }
 }
