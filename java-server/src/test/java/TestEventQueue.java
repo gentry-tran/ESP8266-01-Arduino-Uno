@@ -1,8 +1,7 @@
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.grpc.event.TempEvent;
 import org.junit.jupiter.api.*;
-import pojo.EventQueue;
-import pojo.Node;
+import ds.EventQueue;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;

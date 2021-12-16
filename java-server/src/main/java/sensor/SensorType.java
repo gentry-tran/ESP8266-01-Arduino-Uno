@@ -1,2 +1,5 @@
-package sensor;public class SensorType {
+package sensor;
+
+public enum SensorType {
+    DHT11
 }

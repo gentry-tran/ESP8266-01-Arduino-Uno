@@ -1,11 +1,8 @@
-package pojo;
+package ds;
 
 public class Node<E> {
     public E event;
     Node next;
-
-    public Node() {
-    }
 
     public Node(E dataEvent) {
         this.event = dataEvent;

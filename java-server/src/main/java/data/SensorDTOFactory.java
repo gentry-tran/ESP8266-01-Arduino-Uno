@@ -1,12 +1,19 @@
 package data;
 
+import org.springframework.stereotype.Component;
 import sensor.Sensor;
 import sensor.SensorType;
+import wrapper.Event;
 
-public class SensorObjectFactory implements Sensor {
+@Component
+public class SensorDTOFactory {
 
-    @Override
-    public Sensor getSensorDTO(SensorType type) {
-        return null;
+    public Sensor getSensorDTO(SensorType type, Event event) {
+        switch(type) {
+            case DHT11:
+                return new DHT11(event);
+            default:
+                return null;
+        }
     }
 }

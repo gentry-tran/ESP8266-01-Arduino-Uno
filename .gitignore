@@ -1,3 +1,6 @@
 .idea
 */target/*
 esp_8266_dh11.ino
+java-server.iml
+influx.config
+.DS_Store

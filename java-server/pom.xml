@@ -40,11 +40,6 @@
             <artifactId>maven-assembly-plugin</artifactId>
             <version>3.3.0</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>net.devh</groupId>-->
-<!--            <artifactId>grpc-server-spring-boot-starter</artifactId>-->
-<!--            <version>2.13.0.RELEASE</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
@@ -71,6 +66,21 @@
             <version>RELEASE</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.influxdb</groupId>
+            <artifactId>influxdb-client-java</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>5.3.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.13</version>
+        </dependency>
     </dependencies>
     <build>
         <extensions>
@@ -86,7 +96,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>service.Server</mainClass>
+                            <mainClass>main.App</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -136,7 +146,7 @@
 <!--                            <addClasspath>true</addClasspath>-->
 <!--                            <classpathPrefix>lib</classpathPrefix>-->
 <!--                            <mainClass>-->
-<!--                                service.Server-->
+<!--                                main.App-->
 <!--                            </mainClass>-->
 <!--                        </manifest>-->
 <!--                    </archive>-->

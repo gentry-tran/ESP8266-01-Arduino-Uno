@@ -1,2 +1,5 @@
-package wrapper;public interface Event {
+package wrapper;
+
+public interface Event<T> {
+    T getEvent();
 }

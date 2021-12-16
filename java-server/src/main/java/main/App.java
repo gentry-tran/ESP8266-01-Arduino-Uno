@@ -1,13 +1,16 @@
-package service;
+package main;
 
 import com.influxdb.client.InfluxDBClient;
 import config.Config;
-import handler.event.TempEventConsumer;
+import handler.event.consumer.TempEventConsumer;
+import handler.event.producer.EventProducer;
 import io.grpc.event.TempEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ds.EventQueue;
+import service.EventService;
+import service.Service;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -20,6 +23,7 @@ public class App {
 
     private InfluxDBClient client;
     private EventQueue<TempEvent> queue;
+    private Service service;
 
     public static void main(String[] args) throws IOException {
         logger.info("Starting Application.");
@@ -32,7 +36,7 @@ public class App {
         // Create thread pool
         ExecutorService pool = Executors.newFixedThreadPool(MAX_THREADS);
         Runnable producer = new EventProducer(queue);
-        Runnable consumer = new TempEventConsumer(queue, client);
+        Runnable consumer = new TempEventConsumer(queue, service);
         pool.execute(consumer);
         pool.execute(producer);
     }
@@ -42,6 +46,7 @@ public class App {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
         client = context.getBean(InfluxDBClient.class);
         queue = context.getBean(EventQueue.class);
+        service = context.getBean(EventService.class);
         return this;
     }
 }
