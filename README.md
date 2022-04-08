@@ -233,7 +233,7 @@ int WiFiClient::connect(IPAddress ip, uint16_t port)
 }
 ```
 
-And, since there is no gRPC C client, I will just continue writing to sockets for the remainder of the project. There was a [project|https://github.com/d21d3q/nanogrpc] started to add this, but is now abandoned.
+And, since there is no gRPC C client, I will just continue writing to sockets for the remainder of the project. There was a [project](https://github.com/d21d3q/nanogrpc) started to add this, but is now abandoned.
 
 
 Useful forums:
